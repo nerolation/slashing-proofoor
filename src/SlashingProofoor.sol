@@ -11,8 +11,8 @@ interface IBeaconRoots {
     function get(bytes32 timestamp) external view returns (bytes32);
 }
 
-// Contract for managing slash proofs of validators
-contract FlashProofoor is Merkleizer, MerkleProof {
+// Contract for managing slashing proofs of validators
+contract SlashingProofoor is Merkleizer, MerkleProof {
     uint public constant VALIDATOR_REGISTRY_LIMIT = 2**40;
     IBeaconRoots private beaconRootsContract = IBeaconRoots(0x000F3df6D732807Ef1319fB7B8bB8522d0Beac02);
     uint256 private constant HISTORY_BUFFER_LENGTH = 8191;
@@ -48,7 +48,7 @@ contract FlashProofoor is Merkleizer, MerkleProof {
         bytes32[] memory proofBeaconBlock
     ) public view returns (bool success) {
         // Ensure the validator has not been slashed (the slashing flag in the chunk must be zero)
-        assert(validatorChunks[3] == bytes32(0));
+        assert(validatorChunks[3] != bytes32(0));
 
         // Compute the hash tree root of the validator's chunks
         bytes32 valHashTreeRoot = merkleizeChunks(validatorChunks, 8);
