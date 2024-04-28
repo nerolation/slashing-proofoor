@@ -8,7 +8,7 @@ import "./MerkleTree.sol";
 // Interface for interacting with the beacon roots storage contract (EIP-4788)
 interface IBeaconRoots {
     // Retrieves the beacon root for a given timestamp
-    function get(uint256 timestamp) external view returns (bytes32);
+    function get(bytes32 timestamp) external view returns (bytes32);
 }
 
 // Contract for managing slash proofs of validators
@@ -22,7 +22,7 @@ contract FlashProofoor is Merkleizer, MerkleProof {
     function getRootFromTimestamp(uint256 timestamp) public view returns (bytes32) {
         require(timestamp != 0, "Timestamp cannot be zero");
         require((block.timestamp % HISTORY_BUFFER_LENGTH) == (timestamp % HISTORY_BUFFER_LENGTH), "Timestamp is out of range");
-        return beaconRootsContract.get(timestamp);
+        return beaconRootsContract.get(bytes32(timestamp));
     }
 
     /**
@@ -32,7 +32,6 @@ contract FlashProofoor is Merkleizer, MerkleProof {
      * @param validatorsRoot The root hash of the beaconState.validators tree.
      * @param validatorIndex Index of the validator in the beaconState.validators list.
      * @param validatorChunks Array of data chunks corresponding to the validator's attributes.
-     * @param stateRoot The root of the beaconState being verified.
      * @param proofBeaconState Merkle proof for the beacon state.
      * @param rootBeaconState The beacon state root used for verification.
      * @param proofBeaconBlock Merkle proof for the beacon block.
@@ -44,7 +43,6 @@ contract FlashProofoor is Merkleizer, MerkleProof {
         bytes32 validatorsRoot,
         uint256 validatorIndex,
         bytes32[] memory validatorChunks,
-        bytes32 stateRoot,
         bytes32[] memory proofBeaconState,
         bytes32 rootBeaconState,
         bytes32[] memory proofBeaconBlock
