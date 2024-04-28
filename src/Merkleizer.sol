@@ -40,7 +40,7 @@ contract Merkleizer {
             tmp[j + 1] = hash(tmp[j], zerohashes[j]);
         }
 
-        return mixInLength(tmp[maxDepth], chunks.length);
+        return tmp[maxDepth];
     }
 
     function merge(bytes32 h, uint256 i, bytes32[] memory tmp, uint256 count, uint256 depth) private view {
@@ -86,8 +86,5 @@ contract Merkleizer {
     function mixInLength(bytes32 root, uint256 length) public pure returns (bytes32) {
         bytes32 littleEndianLength = toLittleEndian(length);
         return sha256(abi.encodePacked(root, littleEndianLength));
-    }
-
-   
+    }   
 }
-
