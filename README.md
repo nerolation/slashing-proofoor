@@ -1,4 +1,4 @@
-# slashed-proofoor
-Proof of slashed validator inside the EVM
+# slashing-proofoor
+Proof of slashed validators inside the EVM
 
 ![SlashProofoor diagram](./static/slashproofoor.png)
