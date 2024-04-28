@@ -25,7 +25,7 @@ contract SlashSplash is Merkleizer, MerkleProof {
         assert(validator_chunks[3] == bytes32(0));
 
         // take validators inputs and compute hash_tree_root of validator
-        bytes32 val_hash_tree_root = merkleizeChunks(validator_chunks, VALIDATOR_REGISTRY_LIMIT);
+        bytes32 val_hash_tree_root = merkleizeChunks(validator_chunks, 8);
 
         // input the root of the validators element in the BeaconState (without mxing in the length yet) and 
         // verify that the validator, derived from the just computed val_hash_tree_root,
@@ -43,6 +43,4 @@ contract SlashSplash is Merkleizer, MerkleProof {
         //require(verify(proof_beaconblock, header.parent_beacon_block_root, root_beaconstate, 3));
         return success;
     }
-
 }
-
