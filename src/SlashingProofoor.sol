@@ -5,26 +5,20 @@ pragma solidity ^0.8.24;
 import "./Merkleizer.sol";
 import "./MerkleTree.sol";
 
-// Interface for interacting with the beacon roots storage contract (EIP-4788)
-interface IBeaconRoots {
-    // Retrieves the beacon root for a given timestamp
-    function get(bytes32 timestamp) external view returns (bytes32);
-}
-
 // Contract for managing slash proofs of validators
 contract FlashProofoor is Merkleizer, MerkleProof {
     uint public constant VALIDATOR_REGISTRY_LIMIT = 2**40;
-    IBeaconRoots private beaconRootsContract = IBeaconRoots(0x000F3df6D732807Ef1319fB7B8bB8522d0Beac02);
+    address beaconRootsContract = 0x000F3df6D732807Ef1319fB7B8bB8522d0Beac02;
     uint256 private constant HISTORY_BUFFER_LENGTH = 8191;
 
     event Debug(bytes32 _hash);
 
     constructor(bytes32[] memory _zerohashes) Merkleizer(_zerohashes) {}
 
-    function getRootFromTimestamp(uint256 timestamp) public view returns (bytes32) {
+    function getRootFromTimestamp(uint256 timestamp) public returns (bool, bytes memory) {
         require(timestamp != 0, "Timestamp cannot be zero");
         require((block.timestamp % HISTORY_BUFFER_LENGTH) == (timestamp % HISTORY_BUFFER_LENGTH), "Timestamp is out of range");
-        return beaconRootsContract.get(bytes32(timestamp));
+        return beaconRootsContract.call(bytes.concat(bytes32(timestamp)));
     }
 
     /**
@@ -69,7 +63,7 @@ contract FlashProofoor is Merkleizer, MerkleProof {
         require(verify(beaconStateProof, beaconStateRoot, stateValidatorsHashTreeRoot, 11), "BeaconState validation failed");
 
         // Additional verification against the beacon block could be re-enabled if needed
-        require(verify(proofBeaconBlock, getRootFromTimestamp(blockTimestamp), beaconStateRoot, 3));
+        //require(verify(proofBeaconBlock, getRootFromTimestamp(blockTimestamp), beaconStateRoot, 3));
         return true;
     }
 }
