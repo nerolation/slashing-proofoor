@@ -1,5 +1,5 @@
 # slashing-proofoor
-### Proof of slashed validators inside the EVM
+### Proof of slashed validators inside the EVM using EIP-4788
 
 ### **How it works (in pictures):**
 ##### (1) Proof validator is in chain's validator set:
