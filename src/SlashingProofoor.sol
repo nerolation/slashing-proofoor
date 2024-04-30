@@ -11,9 +11,6 @@ contract SlashingProofoor is Merkleizer, MerkleProof {
     address beaconRootsContract = 0x000F3df6D732807Ef1319fB7B8bB8522d0Beac02;
     uint256 private constant HISTORY_BUFFER_LENGTH = 8191;
 
-    event Debug(bytes32 _hash);
-    event Debug2(bool success);
-
     constructor(bytes32[] memory _zerohashes) Merkleizer(_zerohashes) {}
 
     function getRootFromTimestamp(uint256 timestamp) public returns (bytes32) {
