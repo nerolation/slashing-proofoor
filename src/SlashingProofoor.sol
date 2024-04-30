@@ -12,13 +12,13 @@ contract SlashingProofoor is Merkleizer, MerkleProof {
     uint256 private constant HISTORY_BUFFER_LENGTH = 8191;
 
     event Debug(bytes32 _hash);
+    event Debug2(bool success);
 
     constructor(bytes32[] memory _zerohashes) Merkleizer(_zerohashes) {}
 
     function getRootFromTimestamp(uint256 timestamp) public returns (bytes32) {
-        require(timestamp != 0, "Timestamp cannot be zero");
-        require((block.timestamp % HISTORY_BUFFER_LENGTH) == (timestamp % HISTORY_BUFFER_LENGTH), "Timestamp is out of range");
         (bool ret, bytes memory data) = beaconRootsContract.call(bytes.concat(bytes32(timestamp)));
+        require(ret);
         return bytes32(data);
     }
 
@@ -51,20 +51,18 @@ contract SlashingProofoor is Merkleizer, MerkleProof {
 
         // Compute the hash tree root of the validator's chunks
         bytes32 valHashTreeRoot = merkleizeChunks(validatorChunks, 8);
-        emit Debug(valHashTreeRoot);
 
         // Verify the validator's position and inclusion in the state's validator list
         require(verify(validatorsProof, validatorsRoot, valHashTreeRoot, validatorIndex), "Validator proof failed");
 
         // Calculate the validators hash tree root by mixing in the number of validators
         bytes32 stateValidatorsHashTreeRoot = mixInLength(validatorsRoot, nr_validators);
-        emit Debug(stateValidatorsHashTreeRoot);
 
         // Verify the hash tree root of validators against the beacon state root
         require(verify(beaconStateProof, beaconStateRoot, stateValidatorsHashTreeRoot, 11), "BeaconState validation failed");
 
-        // Additional verification against the beacon block could be re-enabled if needed
-        require(verify(beaconBlockProof, getRootFromTimestamp(blockTimestamp), beaconStateRoot, 3));
+        // Additional verification against the beacon block
+        require(verify(beaconBlockProof, getRootFromTimestamp(blockTimestamp), beaconStateRoot, 3), "Beaconblock proof failed");
         return true;
     }
 }
